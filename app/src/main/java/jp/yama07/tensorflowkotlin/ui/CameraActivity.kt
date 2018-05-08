@@ -22,6 +22,7 @@ import android.widget.Toast
 import jp.yama07.tensorflowkotlin.R
 import jp.yama07.tensorflowkotlin.util.ImageUtils
 import jp.yama07.tensorflowkotlin.view.OverlayView
+import kotlinx.android.synthetic.main.fragment_camera_connection.*
 import timber.log.Timber
 
 abstract class CameraActivity : Activity(), ImageReader.OnImageAvailableListener {
