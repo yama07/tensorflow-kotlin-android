@@ -15,6 +15,7 @@ import android.os.HandlerThread
 import android.util.Size
 import android.view.*
 import android.widget.Toast
+import androidx.core.content.systemService
 import jp.yama07.tensorflowkotlin.R
 import kotlinx.android.synthetic.main.fragment_camera_connection.*
 import timber.log.Timber
@@ -156,7 +157,7 @@ class CameraConnectionFragment : Fragment() {
   private fun setUpCameraOutputs() {
     val (width, height) = inputSize?.let { Pair(it.width, it.height) } ?: return
 
-    val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+    val manager = activity.systemService<CameraManager>()
 
     try {
       val characteristics = manager.getCameraCharacteristics(cameraId)
@@ -179,7 +180,7 @@ class CameraConnectionFragment : Fragment() {
   private fun openCamera(width: Int, height: Int) {
     setUpCameraOutputs()
     configureTransform(width, height)
-    val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+    val manager = activity.systemService<CameraManager>()
     try {
       if (!cameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
         throw RuntimeException("Time out waiting to lock camera opening.")
