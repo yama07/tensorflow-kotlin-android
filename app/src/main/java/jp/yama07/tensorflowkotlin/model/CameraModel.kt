@@ -2,11 +2,10 @@ package jp.yama07.tensorflowkotlin.model
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.hardware.camera2.CameraCaptureSession
-import android.hardware.camera2.CameraDevice
-import android.hardware.camera2.CameraManager
+import android.hardware.camera2.*
 import android.view.Surface
 import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
 
 class CameraModel(context: Context) {
   enum class DeviceStateEvents {
@@ -77,4 +76,43 @@ class CameraModel(context: Context) {
           }
         }, null)
       }
+
+  enum class CaptureSessionEvents {
+    ON_STARTED, ON_PROGRESSED, ON_COMPLETED, ON_SEQUENCE_COMPLETED, ON_SEQUENCE_ABORTED
+  }
+
+  data class CaptureSessionData(
+      val event: CaptureSessionEvents,
+      val session: CameraCaptureSession,
+      val request: CaptureRequest,
+      val result: CaptureResult)
+
+  fun createCaptureCallBack(emitter: ObservableEmitter<CaptureSessionData>)
+      : CameraCaptureSession.CaptureCallback = object : CameraCaptureSession.CaptureCallback() {
+    override fun onCaptureCompleted(session: CameraCaptureSession, request: CaptureRequest, result: TotalCaptureResult) {
+      super.onCaptureCompleted(session, request, result)
+      if (!emitter.isDisposed) {
+        emitter.onNext(CaptureSessionData(CaptureSessionEvents.ON_COMPLETED, session, request, result))
+      }
+    }
+
+    override fun onCaptureFailed(session: CameraCaptureSession, request: CaptureRequest, failure: CaptureFailure) {
+      super.onCaptureFailed(session, request, failure)
+      if (!emitter.isDisposed) {
+        emitter.onError(CameraCaptureFailedException(failure))
+      }
+    }
+  }
+
+  fun fromSetRepeatingRequest(captureSession: CameraCaptureSession, request: CaptureRequest)
+      : Observable<CaptureSessionData> = Observable.create { emitter ->
+    captureSession.setRepeatingRequest(request, createCaptureCallBack(emitter), null)
+  }
+
+  fun fromCapture(captureSession: CameraCaptureSession, request: CaptureRequest)
+      : Observable<CaptureSessionData> = Observable.create { emitter ->
+    captureSession.capture(request, createCaptureCallBack(emitter), null)
+  }
+
+
 }
