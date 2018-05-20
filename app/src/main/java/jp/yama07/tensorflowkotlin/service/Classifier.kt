@@ -7,6 +7,8 @@ interface Classifier {
   data class Recognition(var id: String, var title: String, var confidence: Float, var location: RectF?)
 
   var isStatLoggingEnabled: Boolean
+  var maxResults: Int
+  var threshold: Float
 
   fun recognizeImage(bitmap: Bitmap): List<Recognition>
   fun getStatString(): String

@@ -16,8 +16,8 @@ class TensorFlowImageClassifier private constructor(
     val imageStd: Float) : Classifier {
 
   override var isStatLoggingEnabled: Boolean = false
-  var maxResults = 3
-  var threshold = 0.1f
+  override var maxResults: Int = labels.size
+  override var threshold: Float = 0.0f
 
   private var intValues: IntArray
   private var floatValues: FloatArray
@@ -81,10 +81,10 @@ class TensorFlowImageClassifier private constructor(
     inferenceInterface.fetch(outputName, outputs)
 
     // Find the best classifications
-    val pq = PriorityQueue<Classifier.Recognition>(labels.size, Comparator { lhs, rhs -> compareValues(lhs.confidence, rhs.confidence) })
-    outputs.withIndex().filter { it.value > threshold }.forEach {
+    val pq = PriorityQueue<Classifier.Recognition>(labels.size, Comparator { lhs, rhs -> compareValues(rhs.confidence, lhs.confidence) })
+    outputs.withIndex().filter { threshold < it.value }.forEach {
       pq.add(Classifier.Recognition(
-          "" + it.index, labels.getOrElse(it.index, { "unknown" }), it.value, null))
+          it.index.toString(), labels.getOrElse(it.index, { "unknown" }), it.value, null))
     }
 
     val recognitions = ArrayList<Classifier.Recognition>()

@@ -57,7 +57,10 @@ class ImageClassifierActivity : CameraActivity() {
         imageMean = IMAGE_MEAN,
         imageStd = IMAGE_STD,
         inputName = INPUT_NAME,
-        outputName = OUTPUT_NAME)
+        outputName = OUTPUT_NAME).also {
+      it.maxResults = 3
+      it.threshold = 0.1f
+    }
     previewWidth = size.width
     previewHeight = size.height
 
@@ -104,7 +107,7 @@ class ImageClassifierActivity : CameraActivity() {
   }
 
   override fun onSetDebug(debug: Boolean) {
-    classifier.enableStatLogging(debug)
+    classifier.isStatLoggingEnabled = debug
   }
 
   private fun renderDebug(canvas: Canvas) {
