@@ -7,16 +7,35 @@ import timber.log.Timber
 import java.util.*
 
 class TensorFlowImageClassifier private constructor(
-    private var inputName: String,
-    private var outputName: String,
-    private var inputSize: Int,
-    private var imageMean: Int,
-    private var imageStd: Float) : Classifier {
+    private val inferenceInterface: TensorFlowInferenceInterface,
+    val labels: List<String>,
+    val inputName: String,
+    val outputName: String,
+    val inputSize: Int,
+    val imageMean: Int,
+    val imageStd: Float) : Classifier {
+
+  override var isStatLoggingEnabled: Boolean = false
+  var maxResults = 3
+  var threshold = 0.1f
+
+  private var intValues: IntArray
+  private var floatValues: FloatArray
+  private var outputs: FloatArray
+  private var outputNames: Array<String>
+
+  init {
+    val numClasses: Int = inferenceInterface
+        .graphOperation(outputName).output<Float>(0).shape().size(1).toInt()
+    Timber.d("Read ${labels.size} labels. output layer size is $numClasses")
+
+    intValues = IntArray(inputSize * inputSize)
+    floatValues = FloatArray(inputSize * inputSize * 3)
+    outputs = FloatArray(numClasses)
+    outputNames = Array(1, { outputName })
+  }
 
   companion object {
-    private const val MAX_RESULTS = 3
-    private const val THRESHOLD = 0.1f
-
     fun create(assetManager: AssetManager,
                modelFilename: String,
                labelFilename: String,
@@ -24,46 +43,25 @@ class TensorFlowImageClassifier private constructor(
                imageMean: Int,
                imageStd: Float,
                inputName: String,
-               outputName: String
-    ): Classifier {
-      val classifier = TensorFlowImageClassifier(
+               outputName: String): Classifier {
+      // read labels
+      val actualFilename = labelFilename.split("file:///android_asset/")[1]
+      Timber.d("Reading labels from: $actualFilename")
+      val labels = assetManager.open(actualFilename).bufferedReader().useLines { it.toList() }
+
+      // create TensorFlow instance
+      val inferenceInterface = TensorFlowInferenceInterface(assetManager, modelFilename)
+
+      return TensorFlowImageClassifier(
+          inferenceInterface = inferenceInterface,
+          labels = labels,
           inputName = inputName,
           outputName = outputName,
           inputSize = inputSize,
           imageMean = imageMean,
           imageStd = imageStd)
-
-      val actualFilename = labelFilename.split("file:///android_asset/")[1]
-      Timber.d("Reading labels from: $actualFilename")
-
-      classifier.also {
-        it.labels = assetManager.open(actualFilename).bufferedReader().useLines { it.toList() }
-        it.inferenceInterface = TensorFlowInferenceInterface(assetManager, modelFilename)
-      }
-
-      val operation = classifier.inferenceInterface.graphOperation(outputName)
-      val numClasses: Int = operation.output<Float>(0).shape().size(1).toInt()
-      Timber.d("Read ${classifier.labels.size} labels. output layer size is $numClasses")
-
-      classifier.also {
-        it.intValues = IntArray(inputSize * inputSize)
-        it.floatValues = FloatArray(inputSize * inputSize * 3)
-        it.outputs = FloatArray(numClasses)
-        it.outputNames = Array(1, { outputName })
-      }
-
-      return classifier
     }
   }
-
-  private lateinit var labels: List<String>
-  private lateinit var inferenceInterface: TensorFlowInferenceInterface
-  private lateinit var intValues: IntArray
-  private lateinit var floatValues: FloatArray
-  private lateinit var outputs: FloatArray
-  private lateinit var outputNames: Array<String>
-
-  private var logStats = false
 
   override fun recognizeImage(bitmap: Bitmap): List<Classifier.Recognition> {
     bitmap.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
@@ -77,28 +75,24 @@ class TensorFlowImageClassifier private constructor(
     inferenceInterface.feed(inputName, floatValues, 1, inputSize.toLong(), inputSize.toLong(), 3)
 
     // Run the inference call
-    inferenceInterface.run(outputNames, logStats)
+    inferenceInterface.run(outputNames, isStatLoggingEnabled)
 
     // Copy the output Tensor back into the output array
     inferenceInterface.fetch(outputName, outputs)
 
     // Find the best classifications
-    val pq = PriorityQueue<Classifier.Recognition>(3, Comparator { lhs, rhs -> compareValues(lhs.confidence, rhs.confidence) })
-    outputs.withIndex().filter { it.value > THRESHOLD }.forEach {
+    val pq = PriorityQueue<Classifier.Recognition>(labels.size, Comparator { lhs, rhs -> compareValues(lhs.confidence, rhs.confidence) })
+    outputs.withIndex().filter { it.value > threshold }.forEach {
       pq.add(Classifier.Recognition(
           "" + it.index, labels.getOrElse(it.index, { "unknown" }), it.value, null))
     }
 
     val recognitions = ArrayList<Classifier.Recognition>()
-    for (i in 0 until Math.min(pq.size, MAX_RESULTS)) {
+    for (i in 0 until Math.min(pq.size, maxResults)) {
       recognitions.add(pq.poll())
     }
 
     return recognitions
-  }
-
-  override fun enableStatLogging(debug: Boolean) {
-    logStats = debug
   }
 
   override fun getStatString(): String {
