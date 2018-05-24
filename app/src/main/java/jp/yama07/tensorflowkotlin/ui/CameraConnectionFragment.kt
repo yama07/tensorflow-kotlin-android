@@ -250,17 +250,19 @@ class CameraConnectionFragment : Fragment() {
       previewReader?.setOnImageAvailableListener(imageListener, backgroundHandler)
       previewRequestBuilder?.addTarget(previewReader?.surface)
 
+      previewRequestBuilder?.also {
+        it.set(CaptureRequest.CONTROL_AF_MODE,
+            CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
+        it.set(CaptureRequest.CONTROL_AE_MODE,
+            CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH)
+      }
       cameraDevice?.createCaptureSession(
-          mutableListOf(surface, previewReader?.surface),
+          listOf(surface, previewReader?.surface),
           object : CameraCaptureSession.StateCallback() {
             override fun onConfigured(cameraCaptureSession: CameraCaptureSession) {
               if (cameraDevice == null) return
               captureSession = cameraCaptureSession
               try {
-                previewRequestBuilder?.set(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
-                previewRequestBuilder?.set(CaptureRequest.CONTROL_AE_MODE,
-                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH)
 
                 previewRequest = previewRequestBuilder?.build()
                 captureSession?.setRepeatingRequest(previewRequest, captureCallback, backgroundHandler)
