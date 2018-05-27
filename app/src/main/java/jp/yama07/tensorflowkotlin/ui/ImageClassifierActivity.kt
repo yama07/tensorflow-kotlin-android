@@ -100,7 +100,10 @@ class ImageClassifierActivity : CameraActivity() {
       lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime
       Timber.i("Detect: $results")
       cropCopyBitmap = Bitmap.createBitmap(croppedBitmap)
+
       results_view.setResults(results)
+      pi_chart.setResults(results)
+
       requestRender()
       readyForNextImage()
     })
