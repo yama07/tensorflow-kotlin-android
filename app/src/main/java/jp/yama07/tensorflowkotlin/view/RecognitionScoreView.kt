@@ -17,7 +17,7 @@ class RecognitionScoreView(context: Context, attrs: AttributeSet) : View(context
   private var results: List<Classifier.Recognition>? = null
   private val textSizePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DP, resources.displayMetrics)
   private val fgPaint: Paint = Paint().apply { textSize = textSizePx }
-  private val bgPaint = Paint().apply { color = context.getColor(R.color.colorPrimaryLight) }
+  private val bgPaint: Paint = Paint().apply { color = context.getColor(R.color.colorPrimaryLight) }
 
   override fun setResults(results: List<Classifier.Recognition>) {
     this.results = results

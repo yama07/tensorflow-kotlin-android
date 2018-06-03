@@ -4,6 +4,7 @@ import android.graphics.*
 import android.os.SystemClock
 import android.util.Size
 import android.util.TypedValue
+import android.view.View
 import jp.yama07.tensorflowkotlin.service.Classifier
 import jp.yama07.tensorflowkotlin.service.TensorFlowImageClassifier
 import jp.yama07.tensorflowkotlin.util.BorderedText
@@ -101,9 +102,15 @@ class ImageClassifierActivity : CameraActivity() {
       Timber.i("Detect: $results")
       cropCopyBitmap = Bitmap.createBitmap(croppedBitmap)
 
-      results_view.setResults(results)
-      pi_chart.setResults(results)
-
+      result_text.also {
+        it.alpha = 0.4f
+        it.setResults(results)
+      }
+      result_pi_chart.also {
+        it.ellipsisSize = 10
+        it.sliceAlpha = 0.4f
+        it.setResults(results)
+      }
       requestRender()
       readyForNextImage()
     })
@@ -115,8 +122,13 @@ class ImageClassifierActivity : CameraActivity() {
 
   private fun renderDebug(canvas: Canvas) {
     if (!isDebug) {
+      result_text.visibility = View.GONE
+      result_pi_chart.visibility = View.VISIBLE
       return
     }
+
+    result_text.visibility = View.VISIBLE
+    result_pi_chart.visibility = View.GONE
 
     val copy = cropCopyBitmap ?: return
 

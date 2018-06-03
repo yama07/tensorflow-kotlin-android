@@ -15,10 +15,10 @@ class RecognitionScoreHalfPieChartView : HalfPieChartView, ResultsView {
   constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
 
   var ellipsisText = "Others"
-  var ellipsisSize = 10
+  var ellipsisSize = 100
   var noResultsText = "No Results"
   var sliceColors: IntArray = ColorTemplate.MATERIAL_COLORS
-  var sliceAlpha = 80
+  var sliceAlpha = 1.0f
 
   init {
     chart.also {
@@ -28,10 +28,9 @@ class RecognitionScoreHalfPieChartView : HalfPieChartView, ResultsView {
       it.setUsePercentValues(true)
       it.legend.isEnabled = false
       it.description.isEnabled = false
+      it.setNoDataText("")
       it.invalidate()
     }
-
-    setResults(emptyList())
   }
 
   override fun setResults(results: List<Classifier.Recognition>) {
@@ -47,7 +46,7 @@ class RecognitionScoreHalfPieChartView : HalfPieChartView, ResultsView {
         if (entry.isEmpty()) noResultsText else ellipsisText)
     val dataSet = PieDataSet(entry + othersEntry, "recognition").also {
       it.colors = sliceColors
-          .map { Color.argb(sliceAlpha, Color.red(it), Color.green(it), Color.blue(it)) }.toList()
+          .map { Color.argb((sliceAlpha * 255).toInt(), Color.red(it), Color.green(it), Color.blue(it)) }.toList()
       it.setDrawValues(true)
     }
 
