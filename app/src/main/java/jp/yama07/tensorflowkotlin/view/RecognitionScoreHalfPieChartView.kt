@@ -35,16 +35,23 @@ class RecognitionScoreHalfPieChartView : HalfPieChartView, ResultsView {
 
   override fun setResults(results: List<Classifier.Recognition>) {
     var othersValue = 1.0f
-    val entry = results
+    val resultEntries = results
         .take(ellipsisSize)
         .map {
           othersValue -= it.confidence
           PieEntry(it.confidence * 100.0f, it.title)
         }
 
-    val othersEntry = PieEntry(othersValue * 100.0f,
-        if (entry.isEmpty()) noResultsText else ellipsisText)
-    val dataSet = PieDataSet(entry + othersEntry, "recognition").also {
+    val entries = when {
+      results.isEmpty() ->
+        listOf(PieEntry(100.0f, noResultsText))
+      results.size <= ellipsisSize ->
+        resultEntries
+      else ->
+        resultEntries + PieEntry(othersValue * 100.0f, ellipsisText)
+    }
+
+    val dataSet = PieDataSet(entries, "recognition").also {
       it.colors = sliceColors
           .map { Color.argb((sliceAlpha * 255).toInt(), Color.red(it), Color.green(it), Color.blue(it)) }.toList()
       it.setDrawValues(true)
@@ -52,9 +59,8 @@ class RecognitionScoreHalfPieChartView : HalfPieChartView, ResultsView {
 
     chart.also {
       it.data = PieData(dataSet)
-
       it.notifyDataSetChanged()
-      it.invalidate()
+      it.postInvalidate()
     }
   }
 }
