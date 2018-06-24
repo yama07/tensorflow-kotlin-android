@@ -8,7 +8,7 @@ import java.util.*
 
 class TensorFlowImageClassifier private constructor(
     private val inferenceInterface: TensorFlowInferenceInterface,
-    val labels: List<String>,
+    override val labels: List<String>,
     val inputName: String,
     val outputName: String,
     val inputSize: Int,

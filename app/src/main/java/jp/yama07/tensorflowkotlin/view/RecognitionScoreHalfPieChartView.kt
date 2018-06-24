@@ -2,6 +2,7 @@ package jp.yama07.tensorflowkotlin.view
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -19,6 +20,7 @@ class RecognitionScoreHalfPieChartView : HalfPieChartView, ResultsView {
   var noResultsText = "No Results"
   var sliceColors: IntArray = ColorTemplate.MATERIAL_COLORS
   var sliceAlpha = 1.0f
+  var icons = mutableMapOf<String, Drawable>()
 
   init {
     chart.also {
@@ -37,18 +39,21 @@ class RecognitionScoreHalfPieChartView : HalfPieChartView, ResultsView {
     var othersValue = 1.0f
     val resultEntries = results
         .take(ellipsisSize)
-        .map {
-          othersValue -= it.confidence
-          PieEntry(it.confidence * 100.0f, it.title)
+        .map { result ->
+          othersValue -= result.confidence
+          PieEntry(result.confidence * 100.0f, result.title, icons[result.title])
         }
 
     val entries = when {
-      results.isEmpty() ->
+      results.isEmpty() -> {
         listOf(PieEntry(100.0f, noResultsText))
-      results.size <= ellipsisSize ->
+      }
+      results.size <= ellipsisSize -> {
         resultEntries
-      else ->
+      }
+      else -> {
         resultEntries + PieEntry(othersValue * 100.0f, ellipsisText)
+      }
     }
 
     val dataSet = PieDataSet(entries, "recognition").also {

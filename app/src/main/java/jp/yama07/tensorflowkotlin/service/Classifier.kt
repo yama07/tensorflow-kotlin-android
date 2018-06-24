@@ -10,6 +10,8 @@ interface Classifier {
   var maxResults: Int
   var threshold: Float
 
+  val labels: List<String>
+
   fun recognizeImage(bitmap: Bitmap): List<Recognition>
   fun getStatString(): String
   fun close()

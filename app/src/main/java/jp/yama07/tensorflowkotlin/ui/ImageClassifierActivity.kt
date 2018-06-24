@@ -1,7 +1,9 @@
 package jp.yama07.tensorflowkotlin.ui
 
 import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.os.SystemClock
+import android.support.v4.content.res.ResourcesCompat
 import android.util.Size
 import android.util.TypedValue
 import android.view.View
@@ -85,6 +87,23 @@ class ImageClassifierActivity : CameraActivity() {
         renderDebug(canvas)
       }
     })
+
+    result_text.alpha = 0.4f
+    result_pi_chart.also {
+      it.ellipsisSize = 10
+      it.sliceAlpha = 0.4f
+
+      classifier.labels.forEach { label ->
+        val id = resources.getIdentifier(label, "drawable", packageName)
+        if (id != 0) {
+          val drawable = ResourcesCompat.getDrawable(resources, id, null)
+          it.icons[label] = BitmapDrawable(
+              resources,
+              Bitmap.createScaledBitmap((drawable as BitmapDrawable).bitmap, 200, 200, false)
+          )
+        }
+      }
+    }
   }
 
   override fun processImage() {
@@ -102,15 +121,9 @@ class ImageClassifierActivity : CameraActivity() {
       Timber.i("Detect: $results")
       cropCopyBitmap = Bitmap.createBitmap(croppedBitmap)
 
-      result_text.also {
-        it.alpha = 0.4f
-        it.setResults(results)
-      }
-      result_pi_chart.also {
-        it.ellipsisSize = 10
-        it.sliceAlpha = 0.4f
-        it.setResults(results)
-      }
+      result_text.setResults(results)
+      result_pi_chart.setResults(results)
+
       requestRender()
       readyForNextImage()
     })
