@@ -21,10 +21,10 @@ class ImageClassifierActivity : CameraActivity() {
     const val INPUT_SIZE = 224
     const val IMAGE_MEAN = 117
     const val IMAGE_STD = 1f
-    const val INPUT_NAME = "input"
-    const val OUTPUT_NAME = "output"
-    const val MODEL_FILE = "file:///android_asset/tensorflow_inception_graph.pb"
-    const val LABEL_FILE = "file:///android_asset/imagenet_comp_graph_label_strings.txt"
+    const val INPUT_NAME = "Placeholder"
+    const val OUTPUT_NAME = "final_result"
+    const val MODEL_FILE = "file:///android_asset/dogs-vs-cats-redux-kernel_mobilenet_graph.pb"
+    const val LABEL_FILE = "file:///android_asset/dogs-vs-cats-redux-kernel.txt"
     const val MAINTAIN_ASPECT = true
     val DESIRED_PREVIEW_SIZE = Size(640, 480)
     private const val TEXT_SIZE_DIP = 10f
