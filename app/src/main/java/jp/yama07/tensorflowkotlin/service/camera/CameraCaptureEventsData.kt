@@ -6,14 +6,14 @@ import android.hardware.camera2.TotalCaptureResult
 import android.view.Surface
 
 data class CameraCaptureEventsData(
-  val cameraCaptureEvents: CameraCaptureEvents,
-  val result: TotalCaptureResult? = null,
-  val partialResult: CaptureResult? = null,
-  val timestamp: Long? = null,
-  val frameNumber: Long? = null,
-  val sequenceId: Int? = null,
-  val target: Surface? = null,
-  val failure: CaptureFailure? = null
+    val cameraCaptureEvents: CameraCaptureEvents,
+    val result: TotalCaptureResult? = null,
+    val partialResult: CaptureResult? = null,
+    val timestamp: Long? = null,
+    val frameNumber: Long? = null,
+    val sequenceId: Int? = null,
+    val target: Surface? = null,
+    val failure: CaptureFailure? = null
 ) {
   enum class CameraCaptureEvents {
     ON_STARTED,
