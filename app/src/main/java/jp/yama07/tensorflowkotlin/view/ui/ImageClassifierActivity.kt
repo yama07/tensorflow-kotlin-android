@@ -1,4 +1,4 @@
-package jp.yama07.tensorflowkotlin.ui
+package jp.yama07.tensorflowkotlin.view.ui
 
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
@@ -11,7 +11,7 @@ import jp.yama07.tensorflowkotlin.service.Classifier
 import jp.yama07.tensorflowkotlin.service.TensorFlowImageClassifier
 import jp.yama07.tensorflowkotlin.util.BorderedText
 import jp.yama07.tensorflowkotlin.util.ImageUtils
-import jp.yama07.tensorflowkotlin.view.OverlayView
+import jp.yama07.tensorflowkotlin.view.custom.OverlayView
 import kotlinx.android.synthetic.main.fragment_camera_connection.*
 import timber.log.Timber
 

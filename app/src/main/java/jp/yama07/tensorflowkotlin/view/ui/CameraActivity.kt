@@ -1,4 +1,4 @@
-package jp.yama07.tensorflowkotlin.ui
+package jp.yama07.tensorflowkotlin.view.ui
 
 import android.Manifest
 import android.app.Activity
@@ -21,7 +21,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import jp.yama07.tensorflowkotlin.R
 import jp.yama07.tensorflowkotlin.util.ImageUtils
-import jp.yama07.tensorflowkotlin.view.OverlayView
+import jp.yama07.tensorflowkotlin.view.custom.OverlayView
 import kotlinx.android.synthetic.main.fragment_camera_connection.*
 import timber.log.Timber
 

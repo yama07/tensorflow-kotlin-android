@@ -1,4 +1,4 @@
-package jp.yama07.tensorflowkotlin.ui
+package jp.yama07.tensorflowkotlin.view.ui
 
 import android.app.Fragment
 import android.content.Context

@@ -9,6 +9,7 @@ import android.hardware.camera2.TotalCaptureResult
 import android.os.Handler
 import android.view.Surface
 import jp.yama07.tensorflowkotlin.service.camera.CameraCaptureEventsData.CameraCaptureEvents
+import timber.log.Timber
 
 data class CameraCaptureSessionData(
     val cameraCaptureSessionStateEvents: CameraCaptureSessionStateEvents,
@@ -37,6 +38,7 @@ data class CameraCaptureSessionData(
           timestamp: Long,
           frameNumber: Long
       ) {
+        Timber.d("Request $request @ session $session is onCaptureStarted")
         super.onCaptureStarted(session, request, timestamp, frameNumber)
         cameraCaptureLiveData.postValue(
             CameraCaptureEventsData(
@@ -51,6 +53,7 @@ data class CameraCaptureSessionData(
           request: CaptureRequest?,
           partialResult: CaptureResult?
       ) {
+        Timber.d("Request $request @ session $session is onCaptureProgressed")
         super.onCaptureProgressed(session, request, partialResult)
         cameraCaptureLiveData.postValue(
             CameraCaptureEventsData(
@@ -65,6 +68,7 @@ data class CameraCaptureSessionData(
           request: CaptureRequest?,
           result: TotalCaptureResult?
       ) {
+        Timber.d("Request $request @ session $session is onCaptureCompleted")
         super.onCaptureCompleted(session, request, result)
         cameraCaptureLiveData.postValue(
             CameraCaptureEventsData(
@@ -79,6 +83,7 @@ data class CameraCaptureSessionData(
           sequenceId: Int,
           frameNumber: Long
       ) {
+        Timber.d("Request @ session $session is onCaptureSequenceCompleted")
         super.onCaptureSequenceCompleted(session, sequenceId, frameNumber)
         cameraCaptureLiveData.postValue(
             CameraCaptureEventsData(
@@ -92,6 +97,7 @@ data class CameraCaptureSessionData(
           session: CameraCaptureSession?,
           sequenceId: Int
       ) {
+        Timber.d("Request @ session $session is onCaptureSequenceAborted")
         super.onCaptureSequenceAborted(session, sequenceId)
         cameraCaptureLiveData.postValue(
             CameraCaptureEventsData(
@@ -107,6 +113,7 @@ data class CameraCaptureSessionData(
           target: Surface?,
           frameNumber: Long
       ) {
+        Timber.d("Request $request @ session $session is onCaptureBufferLost")
         super.onCaptureBufferLost(session, request, target, frameNumber)
         cameraCaptureLiveData.postValue(
             CameraCaptureEventsData(
@@ -121,6 +128,7 @@ data class CameraCaptureSessionData(
           request: CaptureRequest?,
           failure: CaptureFailure?
       ) {
+        Timber.d("Request $request @ session $session is onCaptureFailed")
         super.onCaptureFailed(session, request, failure)
         cameraCaptureLiveData.postValue(
             CameraCaptureEventsData(

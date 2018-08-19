@@ -25,6 +25,7 @@ data class CameraDeviceData(
     val cameraCaptureSessionLiveData = MutableLiveData<CameraCaptureSessionData>()
     cameraDevice?.createCaptureSession(surfaceList, object : CameraCaptureSession.StateCallback() {
       override fun onConfigured(session: CameraCaptureSession) {
+        Timber.d("Session $session is onConfigured")
         cameraCaptureSessionLiveData.postValue(
             CameraCaptureSessionData(
                 CameraCaptureSessionData.CameraCaptureSessionStateEvents.ON_CONFIGURED,
@@ -34,6 +35,7 @@ data class CameraDeviceData(
       }
 
       override fun onConfigureFailed(session: CameraCaptureSession) {
+        Timber.d("Session $session is onConfigureFailed")
         cameraCaptureSessionLiveData.postValue(
             CameraCaptureSessionData(
                 CameraCaptureSessionData.CameraCaptureSessionStateEvents.ON_CONFIGURE_FAILED,
@@ -45,6 +47,7 @@ data class CameraDeviceData(
       }
 
       override fun onReady(session: CameraCaptureSession) {
+        Timber.d("Session $session is onReady")
         super.onReady(session)
         cameraCaptureSessionLiveData.postValue(
             CameraCaptureSessionData(
@@ -55,6 +58,7 @@ data class CameraDeviceData(
       }
 
       override fun onActive(session: CameraCaptureSession) {
+        Timber.d("Session $session is onActive")
         super.onActive(session)
         cameraCaptureSessionLiveData.postValue(
             CameraCaptureSessionData(
@@ -65,6 +69,7 @@ data class CameraDeviceData(
       }
 
       override fun onClosed(session: CameraCaptureSession) {
+        Timber.d("Session $session is onClosed")
         super.onClosed(session)
         cameraCaptureSessionLiveData.postValue(
             CameraCaptureSessionData(
@@ -74,10 +79,8 @@ data class CameraDeviceData(
         )
       }
 
-      override fun onSurfacePrepared(
-          session: CameraCaptureSession,
-          surface: Surface
-      ) {
+      override fun onSurfacePrepared(session: CameraCaptureSession, surface: Surface) {
+        Timber.d("Session $session is onSurfacePrepared")
         super.onSurfacePrepared(session, surface)
         cameraCaptureSessionLiveData.postValue(
             CameraCaptureSessionData(

@@ -1,4 +1,4 @@
-package jp.yama07.tensorflowkotlin.view
+package jp.yama07.tensorflowkotlin.view.custom
 
 import android.content.Context
 import android.graphics.Canvas

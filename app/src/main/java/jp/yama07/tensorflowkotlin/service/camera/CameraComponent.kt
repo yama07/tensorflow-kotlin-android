@@ -26,6 +26,7 @@ class CameraComponent(
     try {
       cameraManager.openCamera(cameraId, object : CameraDevice.StateCallback() {
         override fun onOpened(camera: CameraDevice) {
+          Timber.d("Device $camera is onOpened")
           cameraDeviceLiveData.postValue(
               CameraDeviceData(
                   CameraDeviceData.DeviceStateEvents.ON_OPENED,
@@ -35,6 +36,7 @@ class CameraComponent(
         }
 
         override fun onClosed(camera: CameraDevice) {
+          Timber.d("Device $camera is onClosed")
           super.onClosed(camera)
           cameraDeviceLiveData.postValue(
               CameraDeviceData(
@@ -45,6 +47,7 @@ class CameraComponent(
         }
 
         override fun onDisconnected(camera: CameraDevice) {
+          Timber.d("Device $camera is onDisconnected")
           cameraDeviceLiveData.postValue(
               CameraDeviceData(
                   CameraDeviceData.DeviceStateEvents.ON_DISCONNECTED,
@@ -54,10 +57,8 @@ class CameraComponent(
           camera.close()
         }
 
-        override fun onError(
-            camera: CameraDevice,
-            error: Int
-        ) {
+        override fun onError(camera: CameraDevice, error: Int) {
+          Timber.d("Device $camera is onError")
           cameraDeviceLiveData.postValue(
               CameraDeviceData(
                   CameraDeviceData.DeviceStateEvents.ON_ERROR,
